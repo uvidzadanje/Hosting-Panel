@@ -12,11 +12,11 @@ namespace server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ServerController : ControllerBase
+    public class ReportController : ControllerBase
     {
         public HostingContext Context { get; set; }
 
-        public ServerController(HostingContext context)
+        public ReportController(HostingContext context)
         {
             Context = context;
         }
@@ -30,9 +30,9 @@ namespace server.Controllers
             {
                 return Ok(
                     await Context
-                    .Servers
+                    .Reports
                     .ToListAsync()
-                );
+                );    
             }
             catch (Exception e)
             {
@@ -50,9 +50,8 @@ namespace server.Controllers
             {
                  return Ok(
                     await Context
-                    .Servers
-                    .Where(s => s.ID == id)
-                    .Include(s => s.Datacenter)
+                    .Reports
+                    .Where(r => r.ID == id)
                     .ToListAsync()
                 );
             }
@@ -65,14 +64,15 @@ namespace server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Create([FromBody] Server server)
+        public async Task<ActionResult> Create([FromBody] Report report)
         {
+            if(String.IsNullOrEmpty(report.Description)) return BadRequest("Description is required");
 
             try
             {
-                 Context.Servers.Add(server);
+                 Context.Reports.Add(report);
                  await Context.SaveChangesAsync();
-                 return Ok("server successfully added!");
+                 return Ok("Report successfully added!");
             }
             catch (Exception e)
             {
@@ -83,14 +83,15 @@ namespace server.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Update([FromBody] Server server)
+        public async Task<ActionResult> Update([FromBody] Report report)
         {
+            if(String.IsNullOrEmpty(report.Description)) return BadRequest("Description is required");
 
             try
             {
-                 Context.Servers.Update(server);
+                 Context.Reports.Update(report);
                  await Context.SaveChangesAsync();
-                 return Ok($"Server with IP {server.IPAdress} has been changed!");
+                 return Ok($"Report with ID {report.ID} has been changed!");
             }
             catch (Exception e)
             {
@@ -108,11 +109,11 @@ namespace server.Controllers
 
             try
             {
-                 var server = await Context.Servers.FindAsync(id);
-                 string serverIP = server.IPAdress;
-                 Context.Servers.Remove(server);
+                 var report = await Context.Reports.FindAsync(id);
+                 int reportID = report.ID;
+                 Context.Reports.Remove(report);
                  await Context.SaveChangesAsync();
-                 return Ok($"Server on IP {serverIP} has been removed!");
+                 return Ok($"Report with ID {reportID} has been removed!");
             }
             catch (Exception e)
             {

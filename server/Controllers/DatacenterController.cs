@@ -21,7 +21,6 @@ namespace server.Controllers
             Context = context;
         }
 
-        // [Route("")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,7 +61,6 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,7 +80,6 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
