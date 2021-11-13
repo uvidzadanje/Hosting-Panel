@@ -18,7 +18,7 @@ Hosting panel omogućava korisnicima koji koriste usluge hostinga na jednostavni
 
 ## Izgled ER dijagrama baze podataka
 
-<img src="readme_pictures/baza.png">
+<img src="readme_pictures/baza.jpg">
 
 
 ## Izgled grafičkog interfejsa web aplikacije
