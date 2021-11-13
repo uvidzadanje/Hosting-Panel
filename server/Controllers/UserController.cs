@@ -12,16 +12,15 @@ namespace server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DatacenterController : ControllerBase
+    public class UserController : ControllerBase
     {
         public HostingContext Context { get; set; }
 
-        public DatacenterController(HostingContext context)
+        public UserController(HostingContext context)
         {
             Context = context;
         }
 
-        // [Route("")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,7 +30,7 @@ namespace server.Controllers
             {
                 return Ok(
                     await Context
-                    .Datacenters
+                    .Users
                     .ToListAsync()
                 );    
             }
@@ -51,8 +50,8 @@ namespace server.Controllers
             {
                  return Ok(
                     await Context
-                    .Datacenters
-                    .Where(dc => dc.ID == id)
+                    .Users
+                    .Where(u => u.ID == id)
                     .ToListAsync()
                 );
             }
@@ -62,19 +61,19 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Create([FromBody] Datacenter datacenter)
+        public async Task<ActionResult> Create([FromBody] User User)
         {
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
+            if(User.FullName.Length > 50) return BadRequest("Fullname is too long");
+            if(User.Username.Length > 25) return BadRequest("Username is too long");
 
             try
             {
-                 Context.Datacenters.Add(datacenter);
+                 Context.Users.Add(User);
                  await Context.SaveChangesAsync();
-                 return Ok("Datacenter successfully added!");
+                 return Ok("User successfully added!");
             }
             catch (Exception e)
             {
@@ -82,19 +81,19 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Update([FromBody] Datacenter datacenter)
+        public async Task<ActionResult> Update([FromBody] User user)
         {
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
+            if(user.FullName.Length > 50) return BadRequest("Fullname is too long");
+            if(user.Username.Length > 25) return BadRequest("Username is too long");
 
             try
             {
-                 Context.Datacenters.Update(datacenter);
+                 Context.Users.Update(user);
                  await Context.SaveChangesAsync();
-                 return Ok($"Datacenter with ID {datacenter.ID} has been changed!");
+                 return Ok($"User with ID {user.ID} has been changed!");
             }
             catch (Exception e)
             {
@@ -112,11 +111,11 @@ namespace server.Controllers
 
             try
             {
-                 var datacenter = await Context.Datacenters.FindAsync(id);
-                 string datacenterName = datacenter.Name;
-                 Context.Datacenters.Remove(datacenter);
+                 var user = await Context.Users.FindAsync(id);
+                 string userName = user.Username;
+                 Context.Users.Remove(user);
                  await Context.SaveChangesAsync();
-                 return Ok($"Datacenter {datacenterName} has been removed!");
+                 return Ok($"User {userName} has been removed!");
             }
             catch (Exception e)
             {

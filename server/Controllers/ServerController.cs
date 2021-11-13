@@ -12,16 +12,15 @@ namespace server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DatacenterController : ControllerBase
+    public class ServerController : ControllerBase
     {
         public HostingContext Context { get; set; }
 
-        public DatacenterController(HostingContext context)
+        public ServerController(HostingContext context)
         {
             Context = context;
         }
 
-        // [Route("")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,7 +30,8 @@ namespace server.Controllers
             {
                 return Ok(
                     await Context
-                    .Datacenters
+                    .Servers
+                    .Include(s => s.Datacenter)
                     .ToListAsync()
                 );    
             }
@@ -51,8 +51,9 @@ namespace server.Controllers
             {
                  return Ok(
                     await Context
-                    .Datacenters
-                    .Where(dc => dc.ID == id)
+                    .Servers
+                    .Where(s => s.ID == id)
+                    .Include(s => s.Datacenter)
                     .ToListAsync()
                 );
             }
@@ -62,19 +63,17 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Create([FromBody] Datacenter datacenter)
+        public async Task<ActionResult> Create([FromBody] Server server)
         {
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
 
             try
             {
-                 Context.Datacenters.Add(datacenter);
+                 Context.Servers.Add(server);
                  await Context.SaveChangesAsync();
-                 return Ok("Datacenter successfully added!");
+                 return Ok("server successfully added!");
             }
             catch (Exception e)
             {
@@ -82,19 +81,17 @@ namespace server.Controllers
             }
         }
 
-        // [Route("")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Update([FromBody] Datacenter datacenter)
+        public async Task<ActionResult> Update([FromBody] Server server)
         {
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
 
             try
             {
-                 Context.Datacenters.Update(datacenter);
+                 Context.Servers.Update(server);
                  await Context.SaveChangesAsync();
-                 return Ok($"Datacenter with ID {datacenter.ID} has been changed!");
+                 return Ok($"Server with IP {server.ID} has been changed!");
             }
             catch (Exception e)
             {
@@ -112,11 +109,11 @@ namespace server.Controllers
 
             try
             {
-                 var datacenter = await Context.Datacenters.FindAsync(id);
-                 string datacenterName = datacenter.Name;
-                 Context.Datacenters.Remove(datacenter);
+                 var server = await Context.Servers.FindAsync(id);
+                 string serverIP = server.IPAdress;
+                 Context.Servers.Remove(server);
                  await Context.SaveChangesAsync();
-                 return Ok($"Datacenter {datacenterName} has been removed!");
+                 return Ok($"Server on IP {serverIP} has been removed!");
             }
             catch (Exception e)
             {
