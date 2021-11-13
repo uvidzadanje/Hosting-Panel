@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
-    class UserServer
+    public class UserServer
     {
         [Key]
         [Column("id")]

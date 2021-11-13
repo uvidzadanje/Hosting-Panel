@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models
 {
-    class User {
+    public class User {
         [Key]
         [Column("id")]
         public int ID { get; set; }

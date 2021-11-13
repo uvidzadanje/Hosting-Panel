@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace server.Models
 {
-    class HostingContext: DbContext
+    public class HostingContext: DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Server> Servers { get; set; }
