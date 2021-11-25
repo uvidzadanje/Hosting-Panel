@@ -32,14 +32,22 @@ namespace server
             {
                 options.AddPolicy("CORS", builder =>
                 {
-                    builder.AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .WithOrigins(new string[]
-                           {
-                               "http://127.0.0.1:8080"
-                           });
+                    builder.WithOrigins(new string[]
+                    {
+                        "http://localhost:8080",
+                        "https://localhost:8080",
+                        "http://127.0.0.1:8080",
+                        "https://127.0.0.1:8080",
+                        "http://127.0.0.1:5000",
+                        "http://localhost:5000",
+                        "https://127.0.0.1:5000",
+                        "https://localhost:5000"
+                    })
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
                 });
             });
+            services.AddSingleton<IConfiguration>(Configuration.GetSection("AppSettings"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -65,6 +73,8 @@ namespace server
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("CORS");
 
             app.UseEndpoints(endpoints =>
             {
