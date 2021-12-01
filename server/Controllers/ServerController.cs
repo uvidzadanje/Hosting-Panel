@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using server.Models;
+using server.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace server.Controllers
 {
@@ -15,9 +17,11 @@ namespace server.Controllers
     public class ServerController : ControllerBase
     {
         public HostingContext Context { get; set; }
+        private Auth auth;
 
-        public ServerController(HostingContext context)
+        public ServerController(IConfiguration configuration, HostingContext context)
         {
+            this.auth = new Auth(configuration);
             Context = context;
         }
 
@@ -65,8 +69,15 @@ namespace server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Create([FromBody] Server server)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> Create([FromBody] Server server,[FromHeader] string authorization)
         {
+            var token = auth.ValidateJwtToken(authorization);
+
+            if(token == null) return Unauthorized("Unauthentificated user");
+
+            if(token["priority"] != 0) return Forbid("You dont have permission to add server!");
 
             try
             {
@@ -83,8 +94,15 @@ namespace server.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Update([FromBody] Server server)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> Update([FromBody] Server server,[FromHeader] string authorization)
         {
+            var token = auth.ValidateJwtToken(authorization);
+
+            if(token == null) return Unauthorized("Unauthentificated user");
+
+            if(token["priority"] != 0) return Forbid("You dont have permission to update server!");
 
             try
             {
@@ -102,8 +120,17 @@ namespace server.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Delete(int id)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> Delete(int id, [FromHeader] string authorization)
         {
+
+            var token = auth.ValidateJwtToken(authorization);
+
+            if(token == null) return Unauthorized("Unauthentificated user");
+
+            if(token["priority"] != 0) return Forbid("You dont have permission to delete datacenter!");
+
             if(id <= 0) return BadRequest("Wrong ID!");
 
             try

@@ -111,6 +111,8 @@ namespace server.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Update([FromBody] Datacenter datacenter,[FromHeader] string authorization)
         {
             var token = auth.ValidateJwtToken(authorization);
@@ -141,6 +143,8 @@ namespace server.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete(int id, [FromHeader] string authorization)
         {
             var token = auth.ValidateJwtToken(authorization);

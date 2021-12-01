@@ -60,7 +60,7 @@ namespace server.Helpers
 
                 return tokenValues;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

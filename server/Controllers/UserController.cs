@@ -143,6 +143,8 @@ namespace server.Controllers
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete([FromHeader] string authorization)
         {
             var token = this.auth.ValidateJwtToken(authorization);
@@ -170,10 +172,12 @@ namespace server.Controllers
             }
         }
 
-        [Route("auth")]
+        [Route("login")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Login([FromBody] Login loginData)
         {
             if(String.IsNullOrEmpty(loginData.Username) || String.IsNullOrEmpty(loginData.Password)) return BadRequest("Username and password are required!");
@@ -199,6 +203,19 @@ namespace server.Controllers
                         error = e.Message
                 });
             }
+        }
+
+        [Route("auth")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult IsAuthentificated([FromHeader] string authorization)
+        {
+            var token = auth.ValidateJwtToken(authorization);
+
+            if(token != null) return BadRequest("Unauthentificated user!");
+
+            return Ok(new {isAuthentificated = true});
         }
     }
 }
