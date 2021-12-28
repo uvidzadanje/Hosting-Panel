@@ -213,7 +213,7 @@ namespace server.Controllers
         {
             var token = auth.ValidateJwtToken(authorization);
 
-            if(token != null) return BadRequest("Unauthentificated user!");
+            if(token == null) return BadRequest("Unauthentificated user!");
 
             return Ok(new {isAuthentificated = true});
         }
