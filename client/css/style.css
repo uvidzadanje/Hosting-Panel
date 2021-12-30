@@ -1,0 +1,100 @@
+/* 320px — 480px: Mobile devices.
+481px — 768px: iPads, Tablets.
+769px — 1024px: Small screens, laptops.
+1025px — 1200px: Desktops, large screens.
+1201px and more — Extra large screens, TV. */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui,sans-serif;
+}
+.logo
+{
+    padding: 20px;
+}
+.logo span 
+{
+    color: #82b541;
+}
+.menu
+{
+    padding: 0px 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    list-style-type: none;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+nav{
+    background-color: #282828;
+}
+.item
+{
+    width: 100px;
+    padding: 10px;
+    border-radius: 10px;
+}
+.menu a
+{
+    text-decoration: none;
+    color: white;
+}
+.menu a:hover
+{
+    color: #999;
+    transition: all .4s ease;
+}
+.navbar ul
+{
+    text-align: center;
+    list-style-type: none;
+    display: flex;
+}
+.navbar
+{
+    margin-left: auto;
+}
+.active
+{
+    color: #82b541;
+}
+.body
+{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 20px;
+    height: 600px;
+}
+.form
+{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.form-item label
+{
+    display: block;
+    font-size: 18px;
+}
+.form-item input
+{
+    border-radius: 10px;
+    font-size: 18px;
+    padding: 7px;
+    border: 1px solid grey;
+}
+.form-item
+{
+    margin-top: 40px;
+}
+.form-item input[type="submit"]
+{
+    color: white;
+    background-color: #82b541;
+}
