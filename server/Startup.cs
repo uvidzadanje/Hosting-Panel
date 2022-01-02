@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -30,7 +32,7 @@ namespace server
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("CORS", builder =>
+                options.AddPolicy("cors", builder =>
                 {
                     builder.WithOrigins(new string[]
                     {
@@ -39,9 +41,9 @@ namespace server
                         "http://127.0.0.1:8080",
                         "https://127.0.0.1:8080",
                         "http://127.0.0.1:5000",
-                        "http://localhost:5000",
+                        "http://localhost:5001",
                         "https://127.0.0.1:5000",
-                        "https://localhost:5000"
+                        "https://localhost:5001"
                     })
                     .AllowAnyHeader()
                     .AllowAnyMethod();
@@ -70,11 +72,15 @@ namespace server
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles(new StaticFileOptions{
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "..", "client"))
+            });
+
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseCors("CORS");
+            app.UseCors("cors");
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace server.Models
 {
@@ -21,6 +22,7 @@ namespace server.Models
 
         [Required]
         [StringLength(72)]
+        [JsonIgnore]
         [Column("password")]
         public string Password { get; set; }
 

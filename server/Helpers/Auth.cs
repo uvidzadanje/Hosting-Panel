@@ -49,10 +49,11 @@ namespace server.Helpers
                 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
-
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
                 tokenValues.Add("id", Int32.Parse(jwtToken.Claims.First(x => x.Type == "id").Value));
