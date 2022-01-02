@@ -10,14 +10,15 @@
 </head>
 <body>
     <div class="wrapp">
+
         <nav>
             <ul class="menu">
                 <li class="logo"><h1>Hosting<span>Panel</span></h1></li>
                 <li class="navbar">
                     <ul>
-                        <li class="item"><a href="../index.html">Početna</a></li>
-                        <li class="item"><a href="register.html">Registruj se</a></li>
-                        <li class="item"><a href="login.html">Prijavi se</a></li>
+                        <li class="item"><a href="/">Početna</a></li>
+                        <li class="item"><a href="/register">Registruj se</a></li>
+                        <li class="item"><a href="/login">Prijavi se</a></li>
                     </ul>
                 </li>
             </ul>
@@ -28,15 +29,19 @@
                 <h1><center>Registrujte se i postanite član najbolje hosting grupe u regionu</center></h1>
                 <div class="form-item">
                     <label for="full_name">Full name:</label>
-                    <input type="text" name="full_name">
+                    <input type="text" name="full_name" id="full_name">
                 </div>
                 <div class="form-item">
                     <label for="username">Username:</label>
-                    <input type="text" name="username">
+                    <input type="text" name="username" id="username">
                 </div>
                 <div class="form-item">
                     <label for="password">Password:</label>
-                    <input type="password" name="password">
+                    <input type="password" name="password" id="password">
+                </div>
+                <div class="form-item">
+                    <label for="repeat_password">Repeat Password:</label>
+                    <input type="password" name="password" id="repeat_password">
                 </div>
                 <div class="form-item">
                     <input type="submit" value="Registruj se">
@@ -45,8 +50,12 @@
         </section>
 
         <footer>
-
+            <div class="footer-content">
+                <h3>&#169 HostingPanel 2022. Sva prava zadržava</h3>
+            </div>
         </footer>
+        
     </div>
+    <script type="module" src="../js//register.js"></script>
 </body>
 </html>
