@@ -17,8 +17,7 @@
                 <li class="navbar">
                     <ul>
                         <li class="item"><a href="/">Početna</a></li>
-                        <li class="item"><a href="/register">Registruj se</a></li>
-                        <li class="item"><a href="/login">Prijavi se</a></li>
+                        <li class="item"><a href="/settings">Podešavanja</a></li>
                     </ul>
                 </li>
             </ul>
@@ -32,10 +31,6 @@
                     <input type="text" name="full_name" id="full_name">
                 </div>
                 <div class="form-item">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username">
-                </div>
-                <div class="form-item">
                     <label for="password">Password:</label>
                     <input type="password" name="password" id="password">
                 </div>
@@ -44,7 +39,8 @@
                     <input type="password" name="password" id="repeat_password">
                 </div>
                 <div class="form-item">
-                    <input type="submit" value="Registruj se">
+                    <input type="submit" value="Sačuvaj izmene" class="edit_btn">
+                    <input type="submit" value="Izbriši nalog" class="delete_btn">
                 </div>
             </form>
         </section>
@@ -56,6 +52,6 @@
         </footer>
         
     </div>
-    <script type="module" src="../js/register.js"></script>
+    <script type="module" src="../js/settings.js"></script>
 </body>
 </html>

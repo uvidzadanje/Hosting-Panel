@@ -43,18 +43,21 @@ nav{
     background-color: #282828;
     flex: 0 1 auto;
 }
-.item
+nav .item
 {
     width: 100px;
     padding: 10px;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .menu a
 {
     text-decoration: none;
     color: white;
 }
-.menu a:hover
+.menu a:hover, .logout-btn:hover
 {
     color: #999;
     transition: all .4s ease;
@@ -82,6 +85,7 @@ nav{
     margin-top: 20px;
     margin-bottom: 20px;
     flex: 1 1 auto;
+    padding: 20px;
 }
 .form
 {
@@ -125,16 +129,17 @@ footer
 }
 .report
 {
-    max-width: 500px;
+    /* max-width: 500px; */
     padding: 20px;
     background-color: #b54183;
     border-radius: 10px;
     color: white;
+    margin: 10px auto;
 }
-.report_title
+/* .report_title
 {
 
-}
+} */
 .report_description
 {
     margin: 15px 0;
@@ -152,4 +157,52 @@ footer
 {
     flex-grow: 1;
     text-align: right;
+}
+.alert-error, .alert-success {
+    padding: 20px;
+    color: white;
+}
+.alert-error
+{
+    background-color: #f44336;
+}
+.alert-success
+{
+    background-color: #82b541;
+}
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.nav-fullname
+{
+    font-weight: bold;
+}
+.logout-btn
+{
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+.alert-container
+{
+    padding: 20px;
+    margin: 20px auto;
+}
+.reports
+{
+    margin: 10px auto;
+    width: 100%;
+}
+.delete_btn
+{
+    background-color: #f44336;
 }

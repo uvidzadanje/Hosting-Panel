@@ -1,9 +1,11 @@
 import {User} from "./user.js";
-
+import {Helper} from "./helper.js";
 
 let usernameInput = document.querySelector(`#username`);
 let passwordInput = document.querySelector(`#password`);
 let loginBtn = document.querySelector(`input[type="submit"]`);
+let body = document.querySelector(".body");
+let form = document.querySelector(".form");
 
 loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -11,11 +13,11 @@ loginBtn.addEventListener("click", async (e) => {
     let response = await user.login();
     if(response.token)
     {
-        document.cookie = `token=${response.token}`;
-        window.location.replace("/");
+        // document.cookie = `token=${response.token}`;
+        window.location.replace("/dashboard");
     }
     else
     {
-        console.log(response);
+        Helper.drawErrors(form, response);
     }
 })
