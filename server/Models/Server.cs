@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace server.Models
 {
@@ -15,20 +16,19 @@ namespace server.Models
         [Column("ip_address")]
         public string IPAdress { get; set; }
         
-        [Required]
         [Column("processor")]
         public string Processor { get; set; }
 
-        [Required]
         [Column("ram_capacity")]
         public int RAMCapacity { get; set; }
 
-        [Required]
         [Column("ssd_capacity")]
         public int SSDCapacity { get; set; }
 
+        [JsonIgnore]
         public List<Report> Reports { get; set; }
 
+        [JsonIgnore]
         public List<UserServer> UserServer { get; set; }
 
         public Datacenter Datacenter { get; set; }

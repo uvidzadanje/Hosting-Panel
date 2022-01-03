@@ -33,7 +33,7 @@ namespace server.Controllers
         public PhysicalFileResult Index()
         {
             var token = getTokenFromCookie();
-            if(token == null) return OpenHtml("login.html");
+            if(token != null) return OpenHtml("user/dashboard.html");
             return OpenHtml("index.html");
         }
 
@@ -42,6 +42,8 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public PhysicalFileResult Login()
         {
+            var token = getTokenFromCookie();
+            if(token != null) return OpenHtml("user/dashboard.html");
             return OpenHtml("login.html");
         }
 
@@ -50,7 +52,29 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public PhysicalFileResult Register()
         {
+            var token = getTokenFromCookie();
+            if(token != null) return OpenHtml("user/dashboard.html");
             return OpenHtml("register.html");
+        }
+
+        [Route("dashboard")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult Dashboard()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            return OpenHtml("user/dashboard.html");
+        }
+
+        [Route("settings")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult Settings()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            return OpenHtml("user/settings.html");
         }
 
         private PhysicalFileResult OpenHtml(string filename)
@@ -62,7 +86,7 @@ namespace server.Controllers
         private Dictionary<string, int> getTokenFromCookie()
         {
             string tokenFromCookie = HttpContext.Request.Cookies["token"];
-            return auth.ValidateJwtToken("Bearer "+tokenFromCookie);
+            return auth.ValidateJwtToken(tokenFromCookie);
         }
     }
 }

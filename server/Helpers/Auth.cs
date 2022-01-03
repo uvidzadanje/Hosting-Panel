@@ -40,7 +40,7 @@ namespace server.Helpers
             try
             {
                 Dictionary<string, int> tokenValues = new Dictionary<string, int>();
-                var token = authHeader.Split(" ")[1];
+                var token = authHeader;
 
                 if(String.IsNullOrEmpty(token)) throw new Exception("Token doesn't exist!");
 
@@ -57,7 +57,7 @@ namespace server.Helpers
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
                 tokenValues.Add("id", Int32.Parse(jwtToken.Claims.First(x => x.Type == "id").Value));
-                tokenValues.Add("priority", Int32.Parse(jwtToken.Claims.First(x => x.Type == "id").Value));
+                tokenValues.Add("priority", Int32.Parse(jwtToken.Claims.First(x => x.Type == "priority").Value));
 
                 return tokenValues;
             }

@@ -51,27 +51,75 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Show(int id, [FromHeader] string authorization)
+        public async Task<ActionResult> Show(int id)
         {
 
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
             try
             {
                 var report = await Context
                     .Reports
                     .Include(r => r.User)
+                    .Include(r => r.Server)
+                    .Include(r => r.ReportType)
                     .Where(r => r.ID == id)
                     .FirstOrDefaultAsync();
 
+                if(token["priority"] != 0 && token["id"] != report.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to show report!"});
 
-                if(token["priority"] != 0 && token["id"] != report.User.ID) return Forbid("You dont have permission to show report!");
+                if(report == null) return NotFound(new {error = "File not found"});
 
                 return Ok(
                     new {
                         report = report
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {
+                    error = e.Message
+                });
+            }
+        }
+
+        [Route("User")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> ShowByUserSession()
+        {
+
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
+
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
+
+            try
+            {
+                var reports = await Context
+                    .Reports
+                    .Include(r => r.User)
+                    .Include(r => r.ReportType)
+                    .Include(r => r.Server)
+                    .Where(r => r.User.ID == token["id"])
+                    .ToListAsync();
+                
+                if(reports == null) throw new Exception("Reports is empty");
+
+                return Ok(
+                    new {
+                        reports = reports.Select(r => new {
+                            ID = r.ID,
+                            Description = HelperFunctions.TruncateLongString(r.Description, 100),
+                            CreatedAt = r.CreatedAt,
+                            User = new { FullName = r.User.FullName},
+                            ReportType = new { Name = r.ReportType.Name},
+                            Server = new { IPAddress =  r.Server.IPAdress}
+                        })
                     }
                 );
             }
@@ -88,22 +136,36 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Create([FromBody] Report report, [FromHeader] string authorization)
+        public async Task<ActionResult> Create([FromBody] Report report)
         {
 
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 1) return Forbid("You dont have permission to add report!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden, new {error = "You dont have permission to add report!"});
 
-            if(String.IsNullOrEmpty(report.Description)) return BadRequest("Description is required");
+            if(String.IsNullOrEmpty(report.Description)) return BadRequest(new {error = "Description is required"});
 
             try
             {
-                 Context.Reports.Add(report);
-                 await Context.SaveChangesAsync();
-                 return Ok("Report successfully added!");
+                report.CreatedAt = DateTime.Now.Date;
+                report.User = await Context
+                                .Users
+                                .Where(u=> u.ID == token["id"])
+                                .FirstOrDefaultAsync();
+                report.ReportType = await Context
+                                .ReportTypes
+                                .Where(rt=> rt.Name == report.ReportType.Name)
+                                .FirstOrDefaultAsync();
+                report.Server = await Context
+                                .Servers
+                                .Where(s=> s.IPAdress == report.Server.IPAdress)
+                                .FirstOrDefaultAsync();
+                                
+                Context.Reports.Add(report);
+                await Context.SaveChangesAsync();
+                return Ok(new {message = "Report successfully added!"});
             }
             catch (Exception e)
             {
@@ -118,23 +180,32 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Update([FromBody] Report report, [FromHeader] string authorization)
+        public async Task<ActionResult> Update([FromBody] Report report)
         {
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            var token = auth.ValidateJwtToken(authorization);
+            Report reportFromDB = await Context
+                                    .Reports
+                                    .Include(r => r.User)
+                                    .Where(r=> r.ID == report.ID)
+                                    .FirstOrDefaultAsync();
+            
+            if(token["id"] != reportFromDB.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update report!"});
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(String.IsNullOrEmpty(report.Description)) return BadRequest(new {error = "Description is required"});
 
-            if(token["id"] == report.User.ID) return Forbid("You dont have permission to add datacenter!");
-
-            if(String.IsNullOrEmpty(report.Description)) return BadRequest("Description is required");
+            reportFromDB.Description = report.Description;
+            if(report.User != null) reportFromDB.User = report.User;
+            if(report.Server != null) reportFromDB.Server = report.Server;
+            if(report.ReportType != null) reportFromDB.ReportType = report.ReportType;
 
             try
             {
-                 Context.Reports.Update(report);
+                 Context.Reports.Update(reportFromDB);
                  await Context.SaveChangesAsync();
-                 return Ok($"Report with ID {report.ID} has been changed!");
+                 return Ok(new {message = $"Report with ID {reportFromDB.ID} has been changed!"});
             }
             catch (Exception e)
             {
@@ -150,29 +221,33 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Delete(int id, [FromHeader] string authorization)
+        public async Task<ActionResult> Delete(int id)
         {
 
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(id <= 0) return BadRequest("Wrong ID!");
+            if(id <= 0) return BadRequest(new {error = "Wrong ID!"});
 
             try
             {
-                var report = await Context.Reports.Include(r=> r.User).FirstOrDefaultAsync();
-                
-                if(token["id"] != report.User.ID) return Forbid("You don't have permission to delete report!");
+                var report = await Context
+                                    .Reports
+                                    .Include(r=> r.User)
+                                    .Where(r=> r.ID == id)
+                                    .FirstOrDefaultAsync();
+
+                if(token["id"] != report.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You don't have permission to delete that report!"});
 
                 int reportID = report.ID;
                 Context.Reports.Remove(report);
                 await Context.SaveChangesAsync();
-                return Ok($"Report with ID {reportID} has been removed!");
+                return Ok(new {message = $"Report with ID {reportID} has been removed!"});
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message});
             }
         } 
     }

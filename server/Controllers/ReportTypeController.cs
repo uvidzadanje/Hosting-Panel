@@ -29,14 +29,16 @@ namespace server.Controllers
             try
             {
                 return Ok(
-                    await Context
-                    .ReportTypes
-                    .ToListAsync()
+                    new {
+                        reportTypes = await Context
+                                .ReportTypes
+                                .ToListAsync()
+                    }
                 );
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message});
             }
         }
     }

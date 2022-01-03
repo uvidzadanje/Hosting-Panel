@@ -10,28 +10,26 @@ namespace server.Models
         [Column("id")]
         public int ID { get; set; }
 
-        [Required]
         [StringLength(25)]
         [Column("username")]
         public string Username { get; set; }
 
-        [Required]
         [StringLength(50)]
         [Column("full_name")]
         public string FullName { get; set; }
 
-        [Required]
+
         [StringLength(72)]
-        [JsonIgnore]
         [Column("password")]
         public string Password { get; set; }
 
-        [Required]
         [Column("priority")]
         public int Priority { get; set; }
 
+        [JsonIgnore]
         public List<Report> Reports { get; set; }
 
+        [JsonIgnore]
         public List<UserServer> UserServer { get; set; }
     }
 }

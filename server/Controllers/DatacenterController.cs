@@ -81,15 +81,15 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Create([FromBody] Datacenter datacenter, [FromHeader] string authorization)
+        public async Task<ActionResult> Create([FromBody] Datacenter datacenter)
         {
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to add datacenter!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to add datacenter!"});
 
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
+            if(datacenter.Name.Length > 70) return BadRequest(new {error = "Name is too long"});
 
             try
             {
@@ -113,15 +113,15 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Update([FromBody] Datacenter datacenter,[FromHeader] string authorization)
+        public async Task<ActionResult> Update([FromBody] Datacenter datacenter)
         {
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to add datacenter!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to add datacenter!"});
 
-            if(datacenter.Name.Length > 70) return BadRequest("Name is too long");
+            if(datacenter.Name.Length > 70) return BadRequest(new {error = "Name is too long"});
 
             try
             {
@@ -145,15 +145,15 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Delete(int id, [FromHeader] string authorization)
+        public async Task<ActionResult> Delete(int id)
         {
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to add datacenter!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to add datacenter!"});
 
-            if(id <= 0) return BadRequest("Wrong ID!");
+            if(id <= 0) return BadRequest(new {error = "Wrong ID!"});
 
             try
             {

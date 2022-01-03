@@ -33,14 +33,16 @@ namespace server.Controllers
             try
             {
                 return Ok(
-                    await Context
-                    .Servers
-                    .ToListAsync()
+                    new{
+                        servers = await Context
+                                .Servers
+                                .ToListAsync()
+                    }
                 );
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new { error = e.Message});
             }
         }
 
@@ -53,16 +55,18 @@ namespace server.Controllers
             try
             {
                  return Ok(
-                    await Context
-                    .Servers
-                    .Where(s => s.ID == id)
-                    .Include(s => s.Datacenter)
-                    .ToListAsync()
+                    new {
+                        server = await Context
+                                .Servers
+                                .Where(s => s.ID == id)
+                                .Include(s => s.Datacenter)
+                                .FirstOrDefaultAsync()
+                    }
                 );
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message });
             }
         }
 
@@ -71,23 +75,23 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Create([FromBody] Server server,[FromHeader] string authorization)
+        public async Task<ActionResult> Create([FromBody] Server server)
         {
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
             if(token == null) return Unauthorized("Unauthentificated user");
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to add server!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to add server!"});
 
             try
             {
                  Context.Servers.Add(server);
                  await Context.SaveChangesAsync();
-                 return Ok("server successfully added!");
+                 return Ok(new {message = "server successfully added!"});
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message});
             }
         }
 
@@ -96,23 +100,23 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Update([FromBody] Server server,[FromHeader] string authorization)
+        public async Task<ActionResult> Update([FromBody] Server server)
         {
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
             if(token == null) return Unauthorized("Unauthentificated user");
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to update server!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update server!"});
 
             try
             {
                  Context.Servers.Update(server);
                  await Context.SaveChangesAsync();
-                 return Ok($"Server with IP {server.IPAdress} has been changed!");
+                 return Ok(new {message = $"Server with IP {server.IPAdress} has been changed!"});
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message});
             }
         }
 
@@ -122,16 +126,16 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> Delete(int id, [FromHeader] string authorization)
+        public async Task<ActionResult> Delete(int id)
         {
 
-            var token = auth.ValidateJwtToken(authorization);
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
 
-            if(token == null) return Unauthorized("Unauthentificated user");
+            if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return Forbid("You dont have permission to delete datacenter!");
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to delete datacenter!"});
 
-            if(id <= 0) return BadRequest("Wrong ID!");
+            if(id <= 0) return BadRequest(new { error = "Wrong ID!"});
 
             try
             {
@@ -139,11 +143,11 @@ namespace server.Controllers
                  string serverIP = server.IPAdress;
                  Context.Servers.Remove(server);
                  await Context.SaveChangesAsync();
-                 return Ok($"Server on IP {serverIP} has been removed!");
+                 return Ok(new { message = $"Server on IP {serverIP} has been removed!"});
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new {error = e.Message});
             }
         } 
     }
