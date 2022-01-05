@@ -11,7 +11,6 @@ namespace server.Models
         [Column("id")]
         public int ID { get; set; }
 
-        [Required]
         [Column("name")]
         public string Name { get; set; }
 

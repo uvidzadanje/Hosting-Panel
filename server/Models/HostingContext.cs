@@ -9,7 +9,6 @@ namespace server.Models
         public DbSet<Report> Reports { get; set; }
         public DbSet<UserServer> UserServers { get; set; }
         public DbSet<ReportType> ReportTypes { get; set; }
-        public DbSet<Datacenter> Datacenters { get; set; }
 
         public HostingContext(DbContextOptions options):base(options) { }
 

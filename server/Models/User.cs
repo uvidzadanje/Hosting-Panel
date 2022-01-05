@@ -9,7 +9,7 @@ namespace server.Models
         [Key]
         [Column("id")]
         public int ID { get; set; }
-
+        
         [StringLength(25)]
         [Column("username")]
         public string Username { get; set; }

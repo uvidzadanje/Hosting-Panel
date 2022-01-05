@@ -126,11 +126,20 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> Create([FromBody] User user)
         {
-            if(user.FullName.Length > 50) return BadRequest("Fullname is too long");
-            if(user.Username.Length > 25) return BadRequest("Username is too long");
+            if(String.IsNullOrEmpty(user.FullName) || String.IsNullOrEmpty(user.Username) || String.IsNullOrEmpty(user.Password)) 
+                return BadRequest(new {error = "Some of fields are empty!"});  
+            if(user.FullName.Length > 50) return BadRequest(new {error = "Fullname is too long"});
+            if(user.Username.Length > 25) return BadRequest(new {error = "Username is too long"});
 
             try
             {
+                var users = await Context
+                            .Users
+                            .Where(u => u.Username == user.Username)
+                            .ToListAsync();
+
+                if(users.Count != 0) return BadRequest(new {error = "User with this username already exist!"});
+
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
                 Context.Users.Add(user);
@@ -209,6 +218,9 @@ namespace server.Controllers
             try
             {
                 var user = await Context.Users.FindAsync(token["id"]);
+
+                if(user == null) throw new Exception("User doesn't exist!");
+
                 string userName = user.Username;
                 Context.Users.Remove(user);
                 await Context.SaveChangesAsync();
@@ -295,16 +307,27 @@ namespace server.Controllers
 
             try
             {
+                if(token == null) return Unauthorized(new { error = "You must to login!" });
+                if(token["priority"] == 0) return StatusCode(403, new {error = "You cannot add rent!"});
+
                 User userFromDB = await Context
                             .Users
                             .Where(u => u.ID == token["id"])
                             .FirstOrDefaultAsync();
+
                 Server serverFromDB = await Context
                                 .Servers
-                                .Where(s => s.IPAdress == server.IPAdress)
+                                .Where(s => s.ID == server.ID)
                                 .FirstOrDefaultAsync();
 
                 if(serverFromDB == null) return BadRequest(new { error = "Server with this ip address doesn't exist!"});
+                
+                int count = (await Context
+                            .UserServers
+                            .Where(us=> us.User == userFromDB && us.Server == serverFromDB)
+                            .ToListAsync()).Count;
+
+                if(count != 0) return BadRequest(new { error = "You already rented this server!"});
 
                 UserServer userServer = new UserServer();
                 userServer.User = userFromDB;

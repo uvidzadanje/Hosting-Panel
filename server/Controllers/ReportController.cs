@@ -74,7 +74,23 @@ namespace server.Controllers
 
                 return Ok(
                     new {
-                        report = report
+                        report = new {
+                            ID = report.ID,
+                            Description = report.Description,
+                            CreatedAt = report.CreatedAt,
+                            IsSolved = report.IsSolved,
+                            User = new {
+                                FullName = report.User.FullName
+                            },
+                            ReportType = new {
+                                ID = report.ReportType.ID,
+                                Name = report.ReportType.Name
+                            },
+                            Server = new {
+                                ID = report.Server.ID,
+                                IPAddress = report.Server.IPAddress
+                            }
+                        }
                     }
                 );
             }
@@ -105,7 +121,9 @@ namespace server.Controllers
                     .Include(r => r.User)
                     .Include(r => r.ReportType)
                     .Include(r => r.Server)
-                    .Where(r => r.User.ID == token["id"])
+                    .Where(r => r.User.ID == token["id"] || token["priority"]==0)
+                    .OrderBy(r => r.IsSolved)
+                    .OrderBy(r=> r.CreatedAt)
                     .ToListAsync();
                 
                 if(reports == null) throw new Exception("Reports is empty");
@@ -116,9 +134,10 @@ namespace server.Controllers
                             ID = r.ID,
                             Description = HelperFunctions.TruncateLongString(r.Description, 100),
                             CreatedAt = r.CreatedAt,
+                            IsSolved = r.IsSolved,
                             User = new { FullName = r.User.FullName},
                             ReportType = new { Name = r.ReportType.Name},
-                            Server = new { IPAddress =  r.Server.IPAdress}
+                            Server = new { IPAddress =  r.Server.IPAddress}
                         })
                     }
                 );
@@ -143,7 +162,7 @@ namespace server.Controllers
 
             if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden, new {error = "You dont have permission to add report!"});
+            if(token["priority"] != 1) return StatusCode(StatusCodes.Status403Forbidden, new {error = "You dont have permission to add report!"});
 
             if(String.IsNullOrEmpty(report.Description)) return BadRequest(new {error = "Description is required"});
 
@@ -156,16 +175,16 @@ namespace server.Controllers
                                 .FirstOrDefaultAsync();
                 report.ReportType = await Context
                                 .ReportTypes
-                                .Where(rt=> rt.Name == report.ReportType.Name)
+                                .Where(rt=> rt.ID == report.ReportType.ID)
                                 .FirstOrDefaultAsync();
                 report.Server = await Context
                                 .Servers
-                                .Where(s=> s.IPAdress == report.Server.IPAdress)
+                                .Where(s=> s.ID == report.Server.ID)
                                 .FirstOrDefaultAsync();
                                 
                 Context.Reports.Add(report);
                 await Context.SaveChangesAsync();
-                return Ok(new {message = "Report successfully added!"});
+                return Ok(new {message = "Report successfully added!", id = report.ID});
             }
             catch (Exception e)
             {
@@ -191,16 +210,26 @@ namespace server.Controllers
                                     .Include(r => r.User)
                                     .Where(r=> r.ID == report.ID)
                                     .FirstOrDefaultAsync();
+
+            if(reportFromDB == null) return NotFound(new {error = "Report not found"});
             
             if(token["id"] != reportFromDB.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update report!"});
 
             if(String.IsNullOrEmpty(report.Description)) return BadRequest(new {error = "Description is required"});
 
             reportFromDB.Description = report.Description;
-            if(report.User != null) reportFromDB.User = report.User;
-            if(report.Server != null) reportFromDB.Server = report.Server;
-            if(report.ReportType != null) reportFromDB.ReportType = report.ReportType;
 
+            if(report.Server != null) 
+                reportFromDB.Server = await Context
+                                            .Servers
+                                            .Where(s => s.ID == report.Server.ID)
+                                            .FirstOrDefaultAsync();
+
+            if(report.ReportType != null)
+                reportFromDB.ReportType = await Context
+                                                .ReportTypes
+                                                .Where(r => r.ID == report.ReportType.ID)
+                                                .FirstOrDefaultAsync();
             try
             {
                  Context.Reports.Update(reportFromDB);
@@ -238,7 +267,9 @@ namespace server.Controllers
                                     .Where(r=> r.ID == id)
                                     .FirstOrDefaultAsync();
 
-                if(token["id"] != report.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You don't have permission to delete that report!"});
+                if(report == null) throw new Exception("User doesn't exist!");
+
+                if(token["priority"] != 0 && token["id"] != report.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You don't have permission to delete that report!"});
 
                 int reportID = report.ID;
                 Context.Reports.Remove(report);

@@ -10,7 +10,6 @@ namespace server.Models
         [Column("id")]
         public int ID { get; set; }
         
-        [Required]
         [Column("created_at")]
         [DataType(DataType.Date)]
         public DateTime CreatedAt { get; set; }
@@ -18,6 +17,9 @@ namespace server.Models
         [Required]
         [Column("description")]
         public string Description { get; set; }
+
+        [Column("is_solved")]
+        public bool IsSolved { get; set; }
 
         public Server Server { get; set; }
 

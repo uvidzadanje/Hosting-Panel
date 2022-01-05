@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.Models;
 
 namespace server.Migrations
 {
     [DbContext(typeof(HostingContext))]
-    partial class HostingContextModelSnapshot : ModelSnapshot
+    [Migration("20220104133527_V3")]
+    partial class V3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,7 +88,7 @@ namespace server.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("IPAddress")
+                    b.Property<string>("IPAdress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ip_address");

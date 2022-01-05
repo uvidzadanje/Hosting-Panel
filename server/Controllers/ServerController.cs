@@ -59,8 +59,41 @@ namespace server.Controllers
                         server = await Context
                                 .Servers
                                 .Where(s => s.ID == id)
-                                .Include(s => s.Datacenter)
                                 .FirstOrDefaultAsync()
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {error = e.Message });
+            }
+        }
+
+        [Route("User")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> ShowRentedServers()
+        {
+            try
+            {
+                var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
+                if(token == null) return Unauthorized(new {error = "You must to login first!"});
+                var servers = (await Context
+                                .Users
+                                .Where(u=> u.ID == token["id"])
+                                .Include(s=> s.UserServer)
+                                .ThenInclude(us=> us.Server)
+                                .FirstOrDefaultAsync())
+                                .UserServer
+                                .Select(us=> new {
+                                    ID = us.Server.ID,
+                                    IPAddress = us.Server.IPAddress
+                                });
+                 return Ok(
+                    new {
+                        servers = servers
+                                
                     }
                 );
             }
@@ -112,7 +145,7 @@ namespace server.Controllers
             {
                  Context.Servers.Update(server);
                  await Context.SaveChangesAsync();
-                 return Ok(new {message = $"Server with IP {server.IPAdress} has been changed!"});
+                 return Ok(new {message = $"Server with IP {server.IPAddress} has been changed!"});
             }
             catch (Exception e)
             {
@@ -133,14 +166,15 @@ namespace server.Controllers
 
             if(token == null) return Unauthorized(new {error = "Unauthentificated user"});
 
-            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to delete datacenter!"});
+            if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to delete server!"});
 
             if(id <= 0) return BadRequest(new { error = "Wrong ID!"});
 
             try
             {
                  var server = await Context.Servers.FindAsync(id);
-                 string serverIP = server.IPAdress;
+                 if(server == null) throw new Exception("Server doesn't exist!");
+                 string serverIP = server.IPAddress;
                  Context.Servers.Remove(server);
                  await Context.SaveChangesAsync();
                  return Ok(new { message = $"Server on IP {serverIP} has been removed!"});

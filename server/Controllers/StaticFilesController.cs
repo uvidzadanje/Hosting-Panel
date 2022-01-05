@@ -77,6 +77,16 @@ namespace server.Controllers
             return OpenHtml("user/settings.html");
         }
 
+        [Route("report/edit")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult EditReport()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            return OpenHtml("report/edit.html");
+        }
+
         private PhysicalFileResult OpenHtml(string filename)
         {
             string filePath = htmlPath+filename;

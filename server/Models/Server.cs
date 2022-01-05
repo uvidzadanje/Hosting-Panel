@@ -11,10 +11,9 @@ namespace server.Models
         [Column("id")]
         public int ID { get; set; }
 
-        [Required]
-        [RegularExpression(@"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")]
+        [RegularExpression(@"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$")]
         [Column("ip_address")]
-        public string IPAdress { get; set; }
+        public string IPAddress { get; set; }
         
         [Column("processor")]
         public string Processor { get; set; }
@@ -25,12 +24,10 @@ namespace server.Models
         [Column("ssd_capacity")]
         public int SSDCapacity { get; set; }
 
-        [JsonIgnore]
+        // [JsonIgnore]
         public List<Report> Reports { get; set; }
 
-        [JsonIgnore]
+        // [JsonIgnore]
         public List<UserServer> UserServer { get; set; }
-
-        public Datacenter Datacenter { get; set; }
     }
 }
