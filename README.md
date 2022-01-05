@@ -2,19 +2,21 @@
 
 ## O projektu
 
-Hosting panel omogućava korisnicima koji koriste usluge hostinga na jednostavni način "zakupe" server hostinga kao i da naprave report-ova (vrsta usluge kojima korisnik obaveštava hosting na probleme na koje je naišao)
+Hosting panel omogućava korisnicima koji koriste usluge hostinga da na jednostavni način "zakupe" server hostinga kao i da dodaju report (vrsta usluge kojima korisnik obaveštava hosting na probleme na koje je naišao)
 
 ## Funkcionalnost web aplikacije
 
 - Postoje dve vrste korisnika: korisnik usluga i admin
 
-- Korisnik usluga može da zakupi server birajući datacentar i na osnovu datacentra bira server koji želi
+- Korisnik usluga može da zakupi server
 
-- Korisnik usluga može da dostavi izveštaj/report hostingu i na taj način obavesti o problemima na istom, kao i da isti izbriše i izmeni
+- Korisnik usluga može da dostavi izveštaj/report hostingu i na taj način obavesti o problemima na istom. Takođe, report može da izbriše i izmeni
 
-- Admin može dodavati, brisati, menjati datacentre i servere za određeni datacentar
+- Admin može dodavati, brisati, menjati servere, kao i da obriše iste
 
-- Admin grafičkim prikazom ima uvid u statistiku problema za svaki datacentar (izlistani svi serveri sa brojem prijava/problema) kao i broj problema na osnovu tipa problema/reporta
+- Admin takođe može report da označi kao rešen (podrazumevano je da nije rešen)
+
+- Admin grafičkim prikazom ima uvid u broj problema na osnovu tipa problema/reporta
 
 ## Izgled ER dijagrama baze podataka
 
