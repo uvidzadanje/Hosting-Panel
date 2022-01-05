@@ -23,33 +23,37 @@
         </nav>
 
         <section class="body">
-            <h1><center>Dobrodošli na naš hosting!</center></h1>
-            <!-- <section class="reports">
-                <article class="report">
-    
-                    <div class="report_title">
-                        <h3>Lorem ipsum</h3>
+            <h1><center>Dashboard</center></h1>
+            <section class="form-section">
+                <button class="add_report_btn">+</button>
+                <form action="#">
+                    <div class="form-item">
+                        <span>Server: </span>
+                        <select name="rent_server">
+                        </select>
+                        <input type="submit" name="add_rent_server" value="Dodaj zakup">
                     </div>
-                    <div class="report_description">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                            Molestias, molestiae. Praesentium
-                        </p>
+                </form>
+                <form action="#" class="form">
+                    <div class="form-item">
+                        <label for="description">Opišite problem:</label>
+                        <textarea name="description" cols="31" rows="10"></textarea>
                     </div>
-                    
-                    <div class="report_info">
-                        <div class="report_by">
-                            <span>
-                                David Miskeljin
-                            </span>
-                        </div>
-                        <div class="report_date">
-                            <span>
-                                Created at: 25.12.2021.
-                            </span>
-                        </div>
+                    <div class="form-item">
+                        <label for="server">Server:</label>
+                        <select name="server">
+                        </select>
                     </div>
-                </article>
-            </section> -->
+                    <div class="form-item">
+                        <label for="report_type">Vrsta problema:</label>
+                        <select name="report_type">
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <input type="submit" value="Dodaj">
+                    </div>
+                </form>
+            </section>
         </section>
 
         <footer>

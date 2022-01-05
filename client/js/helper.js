@@ -1,4 +1,6 @@
-import {User} from "./user.js";
+import {User} from "./model/user.js";
+import {Server} from "./model/server.js";
+import {ReportType} from "./model/reportType.js";
 
 export class Helper
 {
@@ -44,8 +46,15 @@ export class Helper
 
     static drawSuccess(message, host)
     {
+        if(host.firstChild.className && host.firstChild.className === "alert-container") host.removeChild(host.firstChild);
+        let alertContainer = document.createElement("div");
+        alertContainer.className = "alert-container";
+        alertContainer.innerHTML = "";
+        
         let successAlert = this.getAlert(message, "alert-success");
-        host.prepend(successAlert);
+        alertContainer.prepend(successAlert);
+
+        host.prepend(alertContainer);
     }
 
     static getAlert(text, className)
@@ -91,10 +100,35 @@ export class Helper
                 Helper.drawErrors(body, {error: "Problem with logout"});
                 return;
             }
+            window.localStorage.clear();
             window.location.replace("/");
         })
 
         logoutLi.appendChild(logoutBtn);
         navbar.appendChild(logoutLi);
+    }
+
+    static async setRentedServers(host)
+    {
+        let servers = await Server.showServerBySession();
+        servers.forEach(server => {
+            host.innerHTML += `<option value="${server.ID}">${server.IPAddress}</option>`;
+        });
+    }
+    
+    static async setReportTypes(host)
+    {
+        let reportTypes = await ReportType.getReportTypes();
+        reportTypes.forEach(reportType=>{
+            host.innerHTML += `<option value="${reportType.ID}">${reportType.Name}</option>`;
+        });
+    }
+
+    static async setAllServers(host)
+    {
+        let servers = await Server.showAllServers();
+        servers.forEach(server => {
+            host.innerHTML += `<option value="${server.ID}">${server.IPAddress}</option>`;
+        });
     }
 }

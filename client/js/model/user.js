@@ -1,7 +1,7 @@
 import { Report } from "./report.js";
 import { Server } from "./server.js";
 import { ReportType } from "./reportType.js";
-import { Helper } from "./helper.js";
+import { Helper } from "../helper.js";
 
 export class User
 {
@@ -82,13 +82,20 @@ export class User
     {
 
         let isSet = await this.getReportsFromUser();
-        if(!isSet)
-        {
-            host.innerHTML += `<h2>Trenutno nema nijednog reporta!</h2>`;
-            return;
-        }
         let reportsEl = document.createElement("section");
         reportsEl.className = "reports";
+
+        // let addReportBtn = document.createElement("button");
+        // addReportBtn.className = "add_report_btn";
+        // addReportBtn.innerText = "+";
+
+        // reportsEl.appendChild(addReportBtn);
+
+        if(!isSet)
+        {
+            reportsEl.innerHTML += `<h2>Trenutno nema nijednog reporta!</h2>`;
+            return;
+        }
 
         this.Reports.forEach(el => {
             el.crtaj(reportsEl);
@@ -119,6 +126,7 @@ export class User
                     r.description,
                     r.id,
                     new Date(r.createdAt).toDateString(),
+                    r.isSolved,
                     new Server(r.server.ipAddress),
                     new User(null, null, r.user.fullName),
                     new ReportType(r.reportType.name)
@@ -182,6 +190,30 @@ export class User
             return {error: error.message};
         }
     }
+    async rentServer(server)
+    {
+        try {
+            let response = await fetch("/User/Server", {
+                method: "POST",
+                headers:
+                {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: server.ID
+                })
+            })
+            let data = await response.json();
+
+            if(data.errors) return {errors: data.errors};
+            if(response.status !== 200) throw new Error(data.error);
+
+            return {message : data.message};
+        } catch (error) {
+            return {error: error.message};
+        }
+    }
 
     static async getUserFromSession()
     {
@@ -223,5 +255,5 @@ export class User
             return {error: error.message};
         }
     }
-
+    
 }

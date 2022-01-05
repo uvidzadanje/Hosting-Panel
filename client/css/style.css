@@ -93,10 +93,21 @@ nav .item
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: all .5s ease-in-out;
+}
+.form-section
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .form-item label
 {
     display: block;
+    font-size: 18px;
+}
+.form-item span
+{
     font-size: 18px;
 }
 .form-item input
@@ -106,6 +117,12 @@ nav .item
     padding: 7px;
     border: 1px solid grey;
 }
+.form-item textarea
+{
+    border-radius: 10px;
+    resize: none;
+    padding: 10px;
+}
 .form-item
 {
     margin-top: 40px;
@@ -114,6 +131,29 @@ nav .item
 {
     color: white;
     background-color: #82b541;
+}
+.form-item select
+{
+    padding: 5px;
+    background-color: white;
+    font-size: 14px;
+}
+.form-item option
+{
+    font-size: 14px;
+}
+.form-radio
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.radio-item
+{
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 footer
 {
@@ -129,17 +169,79 @@ footer
 }
 .report
 {
-    /* max-width: 500px; */
+    /* min-width: 500px; */
     padding: 20px;
     background-color: #b54183;
     border-radius: 10px;
     color: white;
     margin: 10px auto;
 }
-/* .report_title
+.add_report_btn
 {
+    padding: 10px;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 auto;
+    margin-top: 20px;
+    background-color: #82b541;
+}
+.report_title
+{
+    display: flex;
+    align-items: center;
+}
+.report_title h3
+{
+    flex-grow: 1;
+}
+.report_btn_container
+{
+    margin-left: 20px;
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+}
+.report_solved, .report_not_solved
+{
+    padding: 10px;
+}
+.report_not_solved
+{
+    color: #f44336;
+}
+.report_solved
+{
+    color: #82b541;
+}
 
-} */
+.report_delete, .report_edit
+{
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.report_delete:hover, .report_edit:hover
+{
+    transition: all .4s ease-in-out;
+    opacity: 0.8;
+}
+.report_edit
+{
+    background-color: #82b541;
+}
+.report_delete
+{
+    background-color: #f44336;
+    margin-left: 10px;
+}
 .report_description
 {
     margin: 15px 0;
@@ -199,6 +301,8 @@ footer
 }
 .reports
 {
+    display: flex;
+    flex-direction: column;
     margin: 10px auto;
     width: 100%;
 }

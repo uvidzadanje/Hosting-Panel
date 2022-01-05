@@ -1,8 +1,8 @@
-import {User} from "./user.js";
+import {User} from "./model/user.js";
 import {Helper} from "./helper.js";
 
-let usernameInput = document.querySelector(`#username`);
-let passwordInput = document.querySelector(`#password`);
+let usernameInput = document.querySelector(`input[name="username"]`);
+let passwordInput = document.querySelector(`input[name="password"]`);
 let loginBtn = document.querySelector(`input[type="submit"]`);
 let body = document.querySelector(".body");
 let form = document.querySelector(".form");
@@ -13,7 +13,6 @@ loginBtn.addEventListener("click", async (e) => {
     let response = await user.login();
     if(response.token)
     {
-        // document.cookie = `token=${response.token}`;
         window.location.replace("/dashboard");
     }
     else

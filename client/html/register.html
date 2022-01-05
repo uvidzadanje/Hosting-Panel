@@ -28,20 +28,33 @@
             <form action="#" class="form">
                 <h1><center>Registrujte se i postanite član najbolje hosting grupe u regionu</center></h1>
                 <div class="form-item">
-                    <label for="full_name">Full name:</label>
-                    <input type="text" name="full_name" id="full_name">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username">
                 </div>
                 <div class="form-item">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username">
+                    <label for="full_name">Full name:</label>
+                    <input type="text" name="full_name">
                 </div>
                 <div class="form-item">
                     <label for="password">Password:</label>
-                    <input type="password" name="password" id="password">
+                    <input type="password" name="password">
                 </div>
                 <div class="form-item">
                     <label for="repeat_password">Repeat Password:</label>
-                    <input type="password" name="password" id="repeat_password">
+                    <input type="password" name="repeat_password">
+                </div>
+                <div class="form-item">
+                    <span><center>Priority</center></span><br><br>
+                    <div class="form-radio">
+                        <div class="radio-item">
+                            <label for="admin">Admin</label>
+                            <input type="radio" name="priority" id="admin" value="0">
+                        </div>
+                        <div class="radio-item">
+                            <label for="user">User</label>
+                            <input type="radio" name="priority" id="user" value="1">
+                        </div>
+                    </div>
                 </div>
                 <div class="form-item">
                     <input type="submit" value="Registruj se">

@@ -6,18 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../css/style.css">
-    <title>Prijavi se</title>
+    <title>Registrujte se</title>
 </head>
 <body>
     <div class="wrapp">
+
         <nav>
             <ul class="menu">
                 <li class="logo"><h1>Hosting<span>Panel</span></h1></li>
                 <li class="navbar">
                     <ul>
                         <li class="item"><a href="/">Početna</a></li>
-                        <li class="item"><a href="/register">Registruj se</a></li>
-                        <li class="item"><a href="/login">Prijavi se</a></li>
+                        <li class="item"><a href="/settings">Podešavanja</a></li>
                     </ul>
                 </li>
             </ul>
@@ -25,17 +25,22 @@
 
         <section class="body">
             <form action="#" class="form">
-                <h1><center>Prijavite se na naš sajt za više funkcionalnosti</center></h1>
                 <div class="form-item">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username">
+                    <label for="description">Description:</label>
+                    <textarea name="description" cols="31" rows="10"></textarea>
                 </div>
                 <div class="form-item">
-                    <label for="password">Password:</label>
-                    <input type="password" name="password">
+                    <label for="server">Server:</label>
+                    <select name="server">
+                    </select>
                 </div>
                 <div class="form-item">
-                    <input type="submit" value="Prijavi se">
+                    <label for="report_type">Report type:</label>
+                    <select name="report_type">
+                    </select>
+                </div>
+                <div class="form-item">
+                    <input type="submit" value="Izmeni">
                 </div>
             </form>
         </section>
@@ -45,7 +50,8 @@
                 <h3>&#169 HostingPanel 2022. Sva prava zadržava</h3>
             </div>
         </footer>
+        
     </div>
-    <script type="module" src="../js/login.js"></script>
+    <script type="module" src="../../js/report/edit.js"></script>
 </body>
 </html>

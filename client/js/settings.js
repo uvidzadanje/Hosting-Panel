@@ -1,13 +1,13 @@
 import {Helper} from "./helper.js";
-import {User} from "./user.js";
+import {User} from "./model/user.js";
 
 let body = document.querySelector(".body");
 let form = document.querySelector(".form");
 let navbar = document.querySelector(".navbar>ul");
 
-let fullNameInput = document.querySelector("#full_name");
-let passwordInput = document.querySelector("#password");
-let repeatPasswordInput = document.querySelector("#repeat_password");
+let fullNameInput = document.querySelector(`input[name="full_name"]`);
+let passwordInput = document.querySelector(`input[name="password"]`);
+let repeatPasswordInput = document.querySelector(`input[name="repeat_password"]`);
 
 let editBtn = document.querySelector(".edit_btn");
 let deleteBtn = document.querySelector(".delete_btn");
