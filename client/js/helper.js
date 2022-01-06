@@ -66,48 +66,8 @@ export class Helper
         alert.innerHTML += `<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>`;
 
         return alert;
-    } 
-
-    static async setUsernameOnNavbar(navbar)
-    {
-        let usernameLi = document.createElement("li");
-        usernameLi.className = "item";
-
-        let usernameP = document.createElement("p");
-        usernameP.className = "nav-fullname";
-
-        let user = await User.getUserFromSession();
-        usernameP.innerText = user.FullName;
-
-        usernameLi.appendChild(usernameP);
-
-        navbar.prepend(usernameLi);
     }
-
-    static async setLogoutBtn(navbar)
-    {
-        let logoutLi = document.createElement("li");
-        logoutLi.className = "item";
-
-        let logoutBtn = document.createElement("button");
-        logoutBtn.className = "logout-btn";
-        logoutBtn.innerText = "Odjavi se";
-
-        logoutBtn.addEventListener("click", async ()=>{
-            let error = await User.logoutUser();
-            if(error) 
-            {
-                Helper.drawErrors(body, {error: "Problem with logout"});
-                return;
-            }
-            window.localStorage.clear();
-            window.location.replace("/");
-        })
-
-        logoutLi.appendChild(logoutBtn);
-        navbar.appendChild(logoutLi);
-    }
-
+    
     static async setRentedServers(host)
     {
         let servers = await Server.showServerBySession();

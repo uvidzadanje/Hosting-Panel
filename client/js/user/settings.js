@@ -1,9 +1,10 @@
-import {Helper} from "./helper.js";
-import {User} from "./model/user.js";
+import {Helper} from "../helper.js";
+import {User} from "../model/user.js";
+import {Navbar} from "../navbar.js";
 
 let body = document.querySelector(".body");
+let wrapp = document.querySelector(".wrapp");
 let form = document.querySelector(".form");
-let navbar = document.querySelector(".navbar>ul");
 
 let fullNameInput = document.querySelector(`input[name="full_name"]`);
 let passwordInput = document.querySelector(`input[name="password"]`);
@@ -11,9 +12,9 @@ let repeatPasswordInput = document.querySelector(`input[name="repeat_password"]`
 
 let editBtn = document.querySelector(".edit_btn");
 let deleteBtn = document.querySelector(".delete_btn");
+let user = await User.getUserFromSession();
 
-await Helper.setUsernameOnNavbar(navbar);
-await Helper.setLogoutBtn(navbar);
+wrapp.prepend(await Navbar.getNav());
 await fillInputs();
 
 editBtn.addEventListener("click", async (e) => {
@@ -53,9 +54,7 @@ deleteBtn.addEventListener("click", async(e) => {
     }
 })
 
-async function fillInputs()
+function fillInputs()
 {
-    let user = await User.getUserFromSession();
-
     fullNameInput.value = user.FullName;
 }

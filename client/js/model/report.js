@@ -24,7 +24,7 @@ export class Report
         this.Container   = null;
     }
 
-    async crtaj(host)
+    async crtaj(host, priority)
     {
         let report = document.createElement("article");
         report.className = "report";
@@ -35,16 +35,48 @@ export class Report
         let btnContainer = document.createElement("div");
         btnContainer.className = "report_btn_container";
 
-        let reportEditBtn = document.createElement("button");
-        reportEditBtn.className = "report_edit";
-        reportEditBtn.innerText = "Izmeni";
+        if(priority == 1)
+        {
+            let reportEditBtn = document.createElement("button");
+            reportEditBtn.className = "report_edit";
+            reportEditBtn.innerText = "Izmeni";
+            
+            btnContainer.appendChild(reportEditBtn);
+
+            reportEditBtn.addEventListener("click", ()=> {
+                window.localStorage.setItem("report", this.ID);
+                window.location.replace("/report/edit");
+            })
+        }
+        else
+        {
+            if(!this.IsSolved)
+            {
+                let reportEditBtn = document.createElement("button");
+                reportEditBtn.className = "report_edit";
+                reportEditBtn.innerText = "Set as solved";
+
+                btnContainer.appendChild(reportEditBtn);
+
+                reportEditBtn.addEventListener("click", async ()=> {
+                    this.IsSolved = true;
+                    let response = await this.update();
+                    if(response.message)
+                    {
+                        Helper.drawSuccess(response.message, host);
+                    }
+                    else
+                    {
+                        Helper.drawErrors(host, response);
+                    }
+                })
+            }
+        }
+
         let reportDeleteBtn = document.createElement("button");
         reportDeleteBtn.className = "report_delete";
         reportDeleteBtn.innerText = "Obriši";
-        
-        btnContainer.appendChild(reportEditBtn);
-        btnContainer.appendChild(reportDeleteBtn);
-        
+
         reportDeleteBtn.addEventListener("click", async () => {
             let response = await this.delete();
             if(response.message)
@@ -58,10 +90,7 @@ export class Report
             }
         });
 
-        reportEditBtn.addEventListener("click", async ()=> {
-            window.localStorage.setItem("report", this.ID);
-            window.location.replace("/report/edit");
-        })
+        btnContainer.appendChild(reportDeleteBtn);
 
         title.appendChild(btnContainer);
         

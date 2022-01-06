@@ -1,5 +1,6 @@
 import {Helper} from "../helper.js";
 import {Report} from "../model/report.js";
+import { Navbar } from "../navbar.js";
 
 // if(!window.localStorage.getItem("report")) window.location.replace("/");
 
@@ -15,8 +16,7 @@ let report = await Report.getById(window.localStorage.getItem("report"));
 if(!report) window.location.replace("/");
 // window.localStorage.removeItem("report");
 
-await Helper.setUsernameOnNavbar(navbar);
-await Helper.setLogoutBtn(navbar);
+await Navbar.getNav();
 
 await Helper.setRentedServers(serversSelect);
 await Helper.setReportTypes(reportTypeSelect);

@@ -11,31 +11,25 @@
 <body>
     <div class="wrapp">
         <section class="body">
-            <h1><center>Dashboard</center></h1>
+            <h1><center>Serveri</center></h1>
             <section class="form-section">
                 <button class="add_report_btn">+</button>
-                <form action="#">
-                    <div class="form-item">
-                        <span>Server: </span>
-                        <select name="rent_server">
-                        </select>
-                        <input type="submit" name="add_rent_server" value="Dodaj zakup">
-                    </div>
-                </form>
                 <form action="#" class="form">
                     <div class="form-item">
-                        <label for="description">Opišite problem:</label>
-                        <textarea name="description" cols="31" rows="10"></textarea>
+                        <label for="ipaddress">IP adresa:</label>
+                        <input type="text" name="ipaddress" placeholder="IPV4 adresa "></input>
                     </div>
                     <div class="form-item">
-                        <label for="server">Server:</label>
-                        <select name="server">
-                        </select>
+                        <label for="processor">Procesor:</label>
+                        <input type="text" name="processor" placeholder="Brend i model procesora">
                     </div>
                     <div class="form-item">
-                        <label for="report_type">Vrsta problema:</label>
-                        <select name="report_type">
-                        </select>
+                        <label for="ram">RAM:</label>
+                        <input type="text" name="ram" placeholder="Kapacitet u GB">
+                    </div>
+                    <div class="form-item">
+                        <label for="ssd">SSD:</label>
+                        <input type="text" name="ssd" placeholder="Kapacitet u GB">
                     </div>
                     <div class="form-item">
                         <input type="submit" value="Dodaj">
@@ -51,6 +45,6 @@
         </footer>
     </div>
 
-    <script type="module" src="../../js/user/dashboard.js"></script>
+    <script type="module" src="../../js/server/index.js"></script>
 </body>
 </html>

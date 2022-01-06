@@ -80,16 +80,11 @@ export class User
 
     async crtajReports(host)
     {
-
         let isSet = await this.getReportsFromUser();
+        let isExist = document.querySelector(".reports");
+        if(isExist) isExist.parentNode.removeChild(isExist);
         let reportsEl = document.createElement("section");
         reportsEl.className = "reports";
-
-        // let addReportBtn = document.createElement("button");
-        // addReportBtn.className = "add_report_btn";
-        // addReportBtn.innerText = "+";
-
-        // reportsEl.appendChild(addReportBtn);
 
         if(!isSet)
         {
@@ -98,7 +93,7 @@ export class User
         }
 
         this.Reports.forEach(el => {
-            el.crtaj(reportsEl);
+            el.crtaj(reportsEl, this.Priority);
         });
 
         host.appendChild(reportsEl);
@@ -127,9 +122,9 @@ export class User
                     r.id,
                     new Date(r.createdAt).toDateString(),
                     r.isSolved,
-                    new Server(r.server.ipAddress),
-                    new User(null, null, r.user.fullName),
-                    new ReportType(r.reportType.name)
+                    new Server(r.server.ipAddress, r.server.id),
+                    new User(null, null, r.user.fullName, null, null, null, r.user.id),
+                    new ReportType(r.reportType.name, r.reportType.id)
                 );
 
                 this.Reports.push(reportInstance);

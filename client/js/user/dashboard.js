@@ -1,10 +1,12 @@
-import {User} from "./model/user.js";
-import {Report} from "./model/report.js";
-import {Server} from "./model/server.js";
-import {Helper} from "./helper.js";
-import { ReportType } from "./model/reportType.js";
+import {User} from "../model/user.js";
+import {Report} from "../model/report.js";
+import {Server} from "../model/server.js";
+import {Helper} from "../helper.js";
+import { ReportType } from "../model/reportType.js";
+import {Navbar} from "../navbar.js";
 
 let body = document.querySelector(".body");
+let wrapp = document.querySelector(".wrapp");
 let navbar = document.querySelector(".navbar>ul");
 let addBtn = document.querySelector(".add_report_btn");
 let form = document.querySelector(".form");
@@ -18,8 +20,7 @@ let serversSelect = document.querySelector(`select[name="server"]`);
 
 let user = await User.getUserFromSession();
 
-await Helper.setUsernameOnNavbar(navbar);
-await Helper.setLogoutBtn(navbar);
+wrapp.prepend(await Navbar.getNav());
 
 if(user.Priority==1)
 {
@@ -43,6 +44,7 @@ if(user.Priority==1)
         if(response.message)
         {
             Helper.drawSuccess("Uspešno dodat report", body);
+            await user.crtajReports(body);
             form.style.display = "none";
         }
         else
@@ -57,14 +59,13 @@ if(user.Priority==1)
 
     if(rentSelectServer.options.length===0)
     {
-        document.querySelectorAll(".form")[1].style.display = "none";
+        document.querySelectorAll("form")[0].style.display = "none";
         Helper.drawErrors(body, {error: "Ne postoji nijedan server!"});
     }
 
     rentSubmit.addEventListener("click", async (e) => {
         e.preventDefault();
         let server = new Server(null, rentSelectServer.value);
-        let user = await User.getUserFromSession();
         let response = await user.rentServer(server);
         if(response.message)
         {
