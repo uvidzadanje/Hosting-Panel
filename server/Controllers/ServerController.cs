@@ -118,6 +118,11 @@ namespace server.Controllers
 
             try
             {
+                 var serverFromDB = await Context
+                                    .Servers
+                                    .Where(s => s.IPAddress == server.IPAddress)
+                                    .FirstOrDefaultAsync();
+                 if(serverFromDB != null) throw new Exception("Server with this ip address already exist!");
                  Context.Servers.Add(server);
                  await Context.SaveChangesAsync();
                  return Ok(new {message = "server successfully added!"});
@@ -141,6 +146,8 @@ namespace server.Controllers
 
             if(token["priority"] != 0) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update server!"});
 
+            if(String.IsNullOrEmpty(server.IPAddress) ||
+                String.IsNullOrEmpty(server.Processor)) return BadRequest(new {error = "Some of fields are empty!"});
             try
             {
                  Context.Servers.Update(server);
@@ -175,6 +182,28 @@ namespace server.Controllers
                  var server = await Context.Servers.FindAsync(id);
                  if(server == null) throw new Exception("Server doesn't exist!");
                  string serverIP = server.IPAddress;
+
+                 var userRelations = await Context
+                                    .UserServers
+                                    .Where(us=> us.Server.ID == server.ID)
+                                    .ToListAsync();
+                foreach(var userRelation in userRelations)
+                {
+                    Context.UserServers.Remove(userRelation);
+                    await Context.SaveChangesAsync();
+                }
+
+                var reports = await Context
+                                .Reports
+                                .Where(r => r.Server.ID == server.ID)
+                                .ToListAsync();
+                
+                foreach(var report in reports)
+                {
+                    Context.Reports.Remove(report);
+                    await Context.SaveChangesAsync();
+                }
+
                  Context.Servers.Remove(server);
                  await Context.SaveChangesAsync();
                  return Ok(new { message = $"Server on IP {serverIP} has been removed!"});

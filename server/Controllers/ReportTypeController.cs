@@ -41,5 +41,32 @@ namespace server.Controllers
                 return BadRequest(new {error = e.Message});
             }
         }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> GetNumOfReportsByReportType()
+        {
+            try
+            {
+                var reportTypes= await Context
+                                .ReportTypes
+                                .Include(rt => rt.Reports)
+                                .ToListAsync();
+                return Ok(
+                    new {
+                        reportTypes = reportTypes
+                                        .Select(rt => new {
+                                            Name = rt.Name,
+                                            ReportsNum = rt.Reports.Count
+                                        })
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {error = e.Message});
+            }
+        }
     }
 }

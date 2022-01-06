@@ -221,6 +221,28 @@ namespace server.Controllers
 
                 if(user == null) throw new Exception("User doesn't exist!");
 
+                var reports = await Context
+                                .Reports
+                                .Where(r => r.User.ID == user.ID)
+                                .ToListAsync();
+
+                foreach(var report in reports)
+                {
+                    Context.Reports.Remove(report);
+                    await Context.SaveChangesAsync();
+                }
+
+                var serverRelations = await Context
+                                        .UserServers
+                                        .Where(us => us.User.ID == user.ID)
+                                        .ToListAsync();
+
+                foreach(var serverRelation in serverRelations)
+                {
+                    Context.UserServers.Remove(serverRelation);
+                    await Context.SaveChangesAsync();
+                }
+
                 string userName = user.Username;
                 Context.Users.Remove(user);
                 await Context.SaveChangesAsync();

@@ -84,7 +84,30 @@ namespace server.Controllers
         {
             var token = getTokenFromCookie();
             if(token == null) return OpenHtml("login.html");
+            if(token["priority"] == 0) return OpenHtml("dashboard.html");
             return OpenHtml("report/edit.html");
+        }
+
+        [Route("server/edit")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult ServerEdit()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            if(token["priority"] == 1) return OpenHtml("dashboard.html");
+            return OpenHtml("server/edit.html");
+        }
+
+        [Route("servers")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult IndexServer()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            if(token["priority"] != 0) return OpenHtml("dashboard.html");
+            return OpenHtml("server/index.html");
         }
 
         private PhysicalFileResult OpenHtml(string filename)

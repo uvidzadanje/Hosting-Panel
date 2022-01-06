@@ -135,9 +135,9 @@ namespace server.Controllers
                             Description = HelperFunctions.TruncateLongString(r.Description, 100),
                             CreatedAt = r.CreatedAt,
                             IsSolved = r.IsSolved,
-                            User = new { FullName = r.User.FullName},
-                            ReportType = new { Name = r.ReportType.Name},
-                            Server = new { IPAddress =  r.Server.IPAddress}
+                            User = new { ID = r.User.ID, FullName = r.User.FullName},
+                            ReportType = new { ID = r.ReportType.ID, Name = r.ReportType.Name},
+                            Server = new { ID = r.Server.ID, IPAddress =  r.Server.IPAddress}
                         })
                     }
                 );
@@ -213,23 +213,27 @@ namespace server.Controllers
 
             if(reportFromDB == null) return NotFound(new {error = "Report not found"});
             
-            if(token["id"] != reportFromDB.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update report!"});
+            if(token["priority"] != 0 && token["id"] != reportFromDB.User.ID) return StatusCode(StatusCodes.Status403Forbidden ,new{error = "You dont have permission to update report!"});
 
             if(String.IsNullOrEmpty(report.Description)) return BadRequest(new {error = "Description is required"});
 
-            reportFromDB.Description = report.Description;
+            if(token["priority"] == 1)
+            {
+                reportFromDB.Description = report.Description;
 
-            if(report.Server != null) 
-                reportFromDB.Server = await Context
-                                            .Servers
-                                            .Where(s => s.ID == report.Server.ID)
-                                            .FirstOrDefaultAsync();
-
-            if(report.ReportType != null)
-                reportFromDB.ReportType = await Context
-                                                .ReportTypes
-                                                .Where(r => r.ID == report.ReportType.ID)
+                if(report.Server != null) 
+                    reportFromDB.Server = await Context
+                                                .Servers
+                                                .Where(s => s.ID == report.Server.ID)
                                                 .FirstOrDefaultAsync();
+
+                if(report.ReportType != null)
+                    reportFromDB.ReportType = await Context
+                                                    .ReportTypes
+                                                    .Where(r => r.ID == report.ReportType.ID)
+                                                    .FirstOrDefaultAsync();
+            }
+            else reportFromDB.IsSolved = report.IsSolved;
             try
             {
                  Context.Reports.Update(reportFromDB);
