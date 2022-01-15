@@ -148,6 +148,13 @@ namespace server.Controllers
 
             if(String.IsNullOrEmpty(server.IPAddress) ||
                 String.IsNullOrEmpty(server.Processor)) return BadRequest(new {error = "Some of fields are empty!"});
+
+            var serverFromDB = await Context
+                                .Servers
+                                .Where(s => s.ID == server.ID)
+                                .FirstOrDefaultAsync();
+            if(serverFromDB == null) return NotFound(new {error = "Server is not found!"});
+            
             try
             {
                  Context.Servers.Update(server);
@@ -163,9 +170,6 @@ namespace server.Controllers
         [Route("{id}")]
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete(int id)
         {
 
@@ -213,5 +217,37 @@ namespace server.Controllers
                 return BadRequest(new {error = e.Message});
             }
         } 
+
+        [Route("Stats")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetNumOfReportsByServer()
+        {
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
+            if(token == null) return Unauthorized(new {error = "You must to login!"});
+
+            if(token["priority"] != 0) return StatusCode(403, new {error= "You don't have permission for that!"});
+            
+            try
+            {
+                var servers = await Context
+                                .Servers
+                                .Include(s => s.Reports)
+                                .ToListAsync();
+                 return Ok(
+                    new {
+                        servers = servers
+                                .Select(s => new {
+                                    IPAddress = s.IPAddress,
+                                    ReportsNum = s.Reports.Count
+                                })
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {error = e.Message });
+            }
+        }
     }
 }

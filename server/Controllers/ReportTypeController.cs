@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using server.Models;
+using server.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace server.Controllers
 {
@@ -15,10 +17,12 @@ namespace server.Controllers
     public class ReportTypeController : ControllerBase
     {
         public HostingContext Context { get; set; }
+        private Auth auth;
 
-        public ReportTypeController(HostingContext context)
+        public ReportTypeController(IConfiguration configuration, HostingContext context)
         {
             Context = context;
+            auth  = new Auth(configuration);
         }
 
         [HttpGet]
@@ -42,11 +46,16 @@ namespace server.Controllers
             }
         }
 
+        [Route("Stats")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> GetNumOfReportsByReportType()
         {
+            var token = auth.ValidateJwtToken(HttpContext.Request.Cookies["token"]);
+            if(token == null) return Unauthorized(new {error = "You must to login!"});
+
+            if(token["priority"] != 0) return StatusCode(403, new {error= "You don't have permission for that!"});
+
             try
             {
                 var reportTypes= await Context

@@ -59,35 +59,36 @@ namespace server.Controllers
             }
         }
 
-        // [HttpGet]
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        // public async Task<ActionResult> Index()
-        // {
-        //     try
-        //     {
-        //         return Ok(
-        //             new{
-        //                 users = (await Context
-        //                 .Users
-        //                 .ToListAsync())
-        //                 .Select(u => new {
-        //                      ID = u.ID,
-        //                      Username = u.Username,
-        //                      FullName = u.FullName,
-        //                      Priority = u.Priority
-        //                  })
-        //             }
-        //         );    
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         return BadRequest(
-        //             new {
-        //             error = e.Message
-        //         });
-        //     }
-        // }
+        [Route("Index")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Index()
+        {
+            try
+            {
+                return Ok(
+                    new{
+                        users = (await Context
+                        .Users
+                        .ToListAsync())
+                        .Select(u => new {
+                             ID = u.ID,
+                             Username = u.Username,
+                             FullName = u.FullName,
+                             Priority = u.Priority
+                         })
+                    }
+                );    
+            }
+            catch (Exception e)
+            {
+                return BadRequest(
+                    new {
+                    error = e.Message
+                });
+            }
+        }
 
         [Route("{id}")]
         [HttpGet]
@@ -178,6 +179,8 @@ namespace server.Controllers
                                     .Users
                                     .Where(u=> u.ID == token["id"])
                                     .FirstOrDefaultAsync();
+
+                if(userFromDB == null) return NotFound(new {error = "User is not found!"});
 
                 if(!String.IsNullOrEmpty(user.Password))
                 {

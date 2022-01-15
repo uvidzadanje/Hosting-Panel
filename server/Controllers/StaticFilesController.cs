@@ -84,7 +84,7 @@ namespace server.Controllers
         {
             var token = getTokenFromCookie();
             if(token == null) return OpenHtml("login.html");
-            if(token["priority"] == 0) return OpenHtml("dashboard.html");
+            if(token["priority"] == 0) return OpenHtml("user/dashboard.html");
             return OpenHtml("report/edit.html");
         }
 
@@ -95,7 +95,7 @@ namespace server.Controllers
         {
             var token = getTokenFromCookie();
             if(token == null) return OpenHtml("login.html");
-            if(token["priority"] == 1) return OpenHtml("dashboard.html");
+            if(token["priority"] == 1) return OpenHtml("user/dashboard.html");
             return OpenHtml("server/edit.html");
         }
 
@@ -106,8 +106,19 @@ namespace server.Controllers
         {
             var token = getTokenFromCookie();
             if(token == null) return OpenHtml("login.html");
-            if(token["priority"] != 0) return OpenHtml("dashboard.html");
+            if(token["priority"] != 0) return OpenHtml("user/dashboard.html");
             return OpenHtml("server/index.html");
+        }
+
+        [Route("stats")]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public PhysicalFileResult Stats()
+        {
+            var token = getTokenFromCookie();
+            if(token == null) return OpenHtml("login.html");
+            if(token["priority"] != 0) return OpenHtml("user/dashboard.html");
+            return OpenHtml("stats.html");
         }
 
         private PhysicalFileResult OpenHtml(string filename)
