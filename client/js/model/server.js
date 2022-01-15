@@ -19,6 +19,7 @@ export class Server
         this.SSDCapacity = ssdcapacity;
         this.Reports     = reports;
         this.UserServer  = userserver;
+        this.Container   = null;
     }
 
     static async showServerBySession()
@@ -105,38 +106,50 @@ export class Server
         }
     }
 
-    async crtaj(host)
+    async getServerTitle(host)
     {
-        let report = document.createElement("article");
-        report.className = "report";
-        
         let title = document.createElement("div");
         title.className = "report_title";
         title.innerHTML = `<h3>${this.IPAddress}</h3>`
         let btnContainer = document.createElement("div");
         btnContainer.className = "report_btn_container";
 
-        let reportEditBtn = document.createElement("button");
-        reportEditBtn.className = "report_edit";
-        reportEditBtn.innerText = "Izmeni";
-        
-        btnContainer.appendChild(reportEditBtn);
+        let serverEditBtn = this.getEditBtn();
+        let serverDeleteBtn = await this.getDelBtn(host);
 
-        reportEditBtn.addEventListener("click", ()=> {
+        btnContainer.appendChild(serverEditBtn);
+        btnContainer.appendChild(serverDeleteBtn);
+
+        title.appendChild(btnContainer);
+
+        this.Container.appendChild(title);
+    }
+
+    getEditBtn()
+    {
+        let serverEditBtn = document.createElement("button");
+        serverEditBtn.className = "report_edit";
+        serverEditBtn.innerText = "Izmeni";
+        serverEditBtn.addEventListener("click", () => {
             window.localStorage.setItem("server", this.ID);
-            window.location.replace("/server/edit");
+            window.location.href = "/server/edit";
         })
 
-        let reportDeleteBtn = document.createElement("button");
-        reportDeleteBtn.className = "report_delete";
-        reportDeleteBtn.innerText = "Obriši";
+        return serverEditBtn;
+    }
 
-        reportDeleteBtn.addEventListener("click", async () => {
+    async getDelBtn(host)
+    {
+        let serverDeleteBtn = document.createElement("button");
+        serverDeleteBtn.className = "report_delete";
+        serverDeleteBtn.innerText = "Obriši";
+
+        serverDeleteBtn.addEventListener("click", async () => {
             let response = await this.delete();
             if(response.message)
             {
                 Helper.drawSuccess(response.message, host);
-                report.parentNode.removeChild(report);
+                this.Container.parentNode.removeChild(this.Container);
             }
             else
             {
@@ -144,19 +157,36 @@ export class Server
             }
         });
 
-        btnContainer.appendChild(reportDeleteBtn);
+        return serverDeleteBtn;
+    }
 
-        title.appendChild(btnContainer);
-        
+    getDescription()
+    {
         let description = document.createElement("div");
         description.className = "report_description";
-        description.innerHTML = `<p>Processor: ${this.Processor}</p>`;
-        description.innerHTML += `<p>RAM: ${this.RAMCapacity} GB</p>`;
-        description.innerHTML += `<p>SSD: ${this.SSDCapacity} GB</p>`;
+        let descriptionEl = [
+            `Processor: ${this.Processor}`,
+            `RAM: ${this.RAMCapacity} GB`,
+            `SSD: ${this.SSDCapacity} GB`
+        ]
+        descriptionEl.forEach(el => {
+            description.innerHTML += `<p>${el}</p>`
+        })
 
-        report.appendChild(title);
-        report.appendChild(description);
-        host.appendChild(report);
+        this.Container.appendChild(description);
+    }
+
+    async crtaj(host)
+    {
+        let server = document.createElement("article");
+        server.className = "report";
+
+        this.Container = server;
+
+        await this.getServerTitle(host);
+        this.getDescription()
+
+        host.appendChild(this.Container);
     }
 
     async delete()
@@ -222,7 +252,7 @@ export class Server
             reportsEl.innerHTML += `<h2>Trenutno nema nijednog reporta!</h2>`;
             return;
         }
-        // console.log(servers);
+        
         servers.forEach(el => {
             el.crtaj(reportsEl);
         });
@@ -252,6 +282,27 @@ export class Server
                 server.ssdCapacity
                 );
             return server;
+        } catch (error) {
+            return {error: error.message};
+        }
+    }
+
+    static async getStats()
+    {
+        try {
+            let response = await fetch("/Server/Stats", {
+                method: "GET",
+                headers:
+                {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            let data = await response.json();
+            if(response.status !== 200) throw new Error(data.error);
+            
+            return data.servers;
         } catch (error) {
             return {error: error.message};
         }

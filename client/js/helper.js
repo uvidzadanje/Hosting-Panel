@@ -91,4 +91,52 @@ export class Helper
             host.innerHTML += `<option value="${server.ID}">${server.IPAddress}</option>`;
         });
     }
+
+    static drawGraph(host,resource, xName, yName)
+    {
+        if(document.querySelector(".stat canvas")) document.querySelector(".stat canvas").parentNode.removeChild(document.querySelector(".stat canvas")); 
+        let canvas = document.createElement("canvas");
+        let context = canvas.getContext("2d");
+        host.appendChild(canvas);
+
+        canvas.height = canvas.width* 0.7;
+
+        context.beginPath();
+        context.moveTo(20,0)
+        context.lineTo(20, canvas.height);
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(0,canvas.height - 20);
+        context.lineTo(canvas.width, canvas.height - 20);
+        context.stroke();
+
+        let itemWidth = (canvas.width - 20) / resource.length;
+        let maxValue = Math.max(...resource.map(item => item[yName]));
+        let podeoci = Math.min(maxValue, 5);
+        
+        context.font = "Arial 12px";
+        context.textAlign = "right";
+        
+        [1,2,3,4,5].forEach(item => {
+            context.fillText((item * maxValue)/podeoci, 18, canvas.height - 20 - item*(canvas.height-20-10)/podeoci);
+        });
+
+        context.textAlign = "center";
+        resource.forEach((item,index) => {
+            if(item[yName] != 0)
+            {
+                context.fillStyle = "#ff0000";
+                let rectX = 20 + index*itemWidth + 10;
+                let rectY = (1-(item[yName] / maxValue)) * canvas.height - 5;
+                let rectWidth = itemWidth-20;
+                let rectHeight = canvas.height*(item[yName]/maxValue)-15;
+                context.fillRect(rectX, rectY, rectWidth, rectHeight);
+                
+                context.fillStyle = "#000000";
+                context.fillText(item[yName], 20 + index*itemWidth+itemWidth/2, rectY + (rectHeight/2));
+            }
+            context.fillText(item[xName], 20 + index*itemWidth+itemWidth/2, canvas.height - 5);
+        });
+    }
 }

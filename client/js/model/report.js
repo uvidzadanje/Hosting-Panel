@@ -24,24 +24,79 @@ export class Report
         this.Container   = null;
     }
 
-    async crtaj(host, priority)
+    getReportInfo()
     {
-        let report = document.createElement("article");
-        report.className = "report";
+        let reportInfo = document.createElement("div");
+        reportInfo.className = "report_info";
         
+        let infoElements = [
+            {
+                cssClass: "report_by",
+                text: this.User.FullName
+            },
+            {
+                cssClass: "report_is_solved",
+                text: `Solved: ${this.IsSolved ? `<span class="report_solved">&#10004;</span>` : `<span class="report_not_solved">&#10006;</span>`}`
+            },
+            {
+                cssClass: "report_date",
+                text: this.CreatedAt
+            }
+        ]
+
+        infoElements.forEach( el => {
+            let reportEl = document.createElement("div");
+            reportEl.className = el.cssClass;
+            reportEl.innerHTML = el.text;
+            
+            reportInfo.appendChild(reportEl);
+        })
+
+        this.Container.appendChild(reportInfo);
+    }
+
+    getDescription()
+    {
+        let description = document.createElement("div");
+        description.className = "report_description";
+        description.innerHTML = `<p>${this.Description}</p>`;
+
+        this.Container.appendChild(description);
+    }
+
+    async getReportTitle(host, priority)
+    {
         let title = document.createElement("div");
         title.className = "report_title";
         title.innerHTML = `<h3>${this.ReportType.Name} - ${this.Server.IPAddress}</h3>`
         let btnContainer = document.createElement("div");
         btnContainer.className = "report_btn_container";
 
+        let reportEditBtn = await this.getEditBtn(host, priority);
+        let reportDeleteBtn = await this.getDelBtn(host);
+
+        if (reportEditBtn) btnContainer.appendChild(reportEditBtn);
+        btnContainer.appendChild(reportDeleteBtn);
+
+        title.appendChild(btnContainer);
+
+        this.Container.appendChild(title);
+    }
+
+    async getEditBtn(host, priority)
+    {
+        let reportEditBtn;
+
+        function setButton()
+        {
+            reportEditBtn = document.createElement("button");
+            reportEditBtn.className = "report_edit";
+        }
+
         if(priority == 1)
         {
-            let reportEditBtn = document.createElement("button");
-            reportEditBtn.className = "report_edit";
+            setButton();
             reportEditBtn.innerText = "Izmeni";
-            
-            btnContainer.appendChild(reportEditBtn);
 
             reportEditBtn.addEventListener("click", ()=> {
                 window.localStorage.setItem("report", this.ID);
@@ -52,11 +107,8 @@ export class Report
         {
             if(!this.IsSolved)
             {
-                let reportEditBtn = document.createElement("button");
-                reportEditBtn.className = "report_edit";
+                setButton();
                 reportEditBtn.innerText = "Set as solved";
-
-                btnContainer.appendChild(reportEditBtn);
 
                 reportEditBtn.addEventListener("click", async ()=> {
                     this.IsSolved = true;
@@ -64,6 +116,9 @@ export class Report
                     if(response.message)
                     {
                         Helper.drawSuccess(response.message, host);
+                        setTimeout(()=>{
+                            window.location.reload();
+                        }, 1000);
                     }
                     else
                     {
@@ -72,7 +127,11 @@ export class Report
                 })
             }
         }
+        return reportEditBtn;
+    }
 
+    async getDelBtn(host)
+    {
         let reportDeleteBtn = document.createElement("button");
         reportDeleteBtn.className = "report_delete";
         reportDeleteBtn.innerText = "Obriši";
@@ -82,7 +141,7 @@ export class Report
             if(response.message)
             {
                 Helper.drawSuccess(response.message, host);
-                report.parentNode.removeChild(report);
+                this.Container.parentNode.removeChild(this.Container);
             }
             else
             {
@@ -90,38 +149,20 @@ export class Report
             }
         });
 
-        btnContainer.appendChild(reportDeleteBtn);
+        return reportDeleteBtn;
+    }
 
-        title.appendChild(btnContainer);
-        
-        let description = document.createElement("div");
-        description.className = "report_description";
-        description.innerHTML = `<p>${this.Description}</p>`
-        
-        let reportInfo = document.createElement("div");
-        reportInfo.className = "report_info";
-        
-        let reportBy = document.createElement("div");
-        reportBy.className = "report_by";
-        reportBy.innerHTML = `<b>${this.User.FullName}</b>`;
-        
-        let reportDate = document.createElement("div");
-        reportDate.className = "report_date";
-        reportDate.innerHTML = `<span>${this.CreatedAt}</span>`;
-
-        let isSolved = document.createElement("p");
-        isSolved.innerHTML = `Solved: ${this.IsSolved ? `<span class="report_solved">&#10004;</span>` : `<span class="report_not_solved">&#10006;</span>`}`;
-
-        reportInfo.appendChild(reportBy);
-        reportInfo.appendChild(isSolved);
-        reportInfo.appendChild(reportDate);
-        
-        report.appendChild(title);
-        report.appendChild(description);
-        report.appendChild(reportInfo);
-
+    async crtaj(host, priority)
+    {
+        let report = document.createElement("article");
+        report.className = "report";
         this.Container = report;
-        host.appendChild(report);
+
+        await this.getReportTitle(host, priority);
+        this.getDescription();
+        this.getReportInfo();
+
+        host.appendChild(this.Container);
     }
 
     async add()

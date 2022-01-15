@@ -2,8 +2,6 @@ import {Helper} from "../helper.js";
 import {Server} from "../model/server.js";
 import { Navbar } from "../navbar.js";
 
-// if(!window.localStorage.getItem("report")) window.location.replace("/");
-
 let body = document.querySelector(".body");
 let wrapp = document.querySelector(".wrapp");
 let form = document.querySelector(".form");
@@ -17,7 +15,6 @@ let server = await Server.getById(window.localStorage.getItem("server"));
 
 if(!server || server.error || server.errors) window.location.replace("/");
 fillInputs();
-// window.localStorage.removeItem("report");
 
 wrapp.prepend(await Navbar.getNav());
 

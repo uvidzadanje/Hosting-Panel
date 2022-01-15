@@ -15,10 +15,27 @@ export class Navbar
         let logo = document.createElement("li");
         logo.className = "logo";
         logo.innerHTML = "<h1>Hosting<span>Panel</span></h1>";
+
+        let hamburger = document.createElement("div");
+        hamburger.className = "hamburger";
+
+        for(let i = 0; i < 3; i++)
+        {
+            let hamburgerLine = document.createElement("div");
+            hamburgerLine.className = "hamburger-line";
+            hamburger.appendChild(hamburgerLine);
+        }
+
+        logo.appendChild(hamburger);
+
         menu.appendChild(logo);
-
+        
         let navbar = this.getNavbar(user);
-
+        
+        hamburger.addEventListener("click", ()=> {
+            if(window.getComputedStyle(navbar).display === "none") navbar.style.display = "flex";
+            else navbar.style.display = "none";
+        })
         menu.appendChild(navbar);
 
         return nav;
@@ -114,7 +131,7 @@ export class Navbar
 
         let statLi = document.createElement("li");
         statLi.className = "item";
-        statLi.innerHTML = `<a href="/stat">Statistika</a>`;
+        statLi.innerHTML = `<a href="/stats">Statistika</a>`;
 
         baseNavbar.insertBefore(serversLi, baseNavbar.children[2]);
         baseNavbar.insertBefore(statLi, baseNavbar.lastChild);

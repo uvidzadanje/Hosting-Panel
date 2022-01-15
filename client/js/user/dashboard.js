@@ -7,7 +7,6 @@ import {Navbar} from "../navbar.js";
 
 let body = document.querySelector(".body");
 let wrapp = document.querySelector(".wrapp");
-let navbar = document.querySelector(".navbar>ul");
 let addBtn = document.querySelector(".add_report_btn");
 let form = document.querySelector(".form");
 let formSection = document.querySelector(".form-section");
@@ -71,6 +70,9 @@ if(user.Priority==1)
         {
             Helper.drawSuccess("Uspešno dodat zakup", body);
             form.style.display = "none";
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
         else
         {
