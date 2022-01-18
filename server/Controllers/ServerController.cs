@@ -154,10 +154,15 @@ namespace server.Controllers
                                 .Where(s => s.ID == server.ID)
                                 .FirstOrDefaultAsync();
             if(serverFromDB == null) return NotFound(new {error = "Server is not found!"});
+
+            serverFromDB.IPAddress = server.IPAddress;
+            serverFromDB.Processor = server.Processor;
+            serverFromDB.RAMCapacity = server.RAMCapacity;
+            serverFromDB.SSDCapacity = server.SSDCapacity;
             
             try
             {
-                 Context.Servers.Update(server);
+                 Context.Servers.Update(serverFromDB);
                  await Context.SaveChangesAsync();
                  return Ok(new {message = $"Server with IP {server.IPAddress} has been changed!"});
             }
