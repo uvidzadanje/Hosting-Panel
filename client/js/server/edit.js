@@ -30,7 +30,7 @@ formEdit.addEventListener("click", async (e) => {
 
     if(response.message)
     {
-        Helper.drawSuccess("Uspešno izmenjen report!", body);
+        Helper.drawSuccess("Uspešno izmenjen server!", body);
     }
     else
     {
